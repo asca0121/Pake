@@ -71,9 +71,13 @@ on:
         required: false
         default: "deb"
 
+      installer_language:
+        description: "Windows installer language (e.g. zh-CN)"
+        required: false
+        default: "en-US"
 # Builds an app on demand for anyone who runs it; it writes nothing.
 permissions:
-  contents: read
+contents: read
 
 jobs:
   build:
@@ -193,6 +197,7 @@ jobs:
           INPUT_NEW_WINDOW: ${{ inputs.new_window }}
           INPUT_MULTI_ARCH: ${{ inputs.multi_arch }}
           INPUT_TARGETS: ${{ inputs.targets }}
+          INPUT_INSTALLER_LANGUAGE: ${{ inputs.installer_language }}
         run: |
           $args = $env:INPUT_URL, "--name", $env:INPUT_NAME
 
@@ -222,6 +227,9 @@ jobs:
 
           if (-not [string]::IsNullOrEmpty($env:INPUT_APP_VERSION)) {
             $args += "--app-version", $env:INPUT_APP_VERSION
+          }
+          if (-not [string]::IsNullOrEmpty($env:INPUT_INSTALLER_LANGUAGE)) {
+          $args += "--installer-language", $env:INPUT_INSTALLER_LANGUAGE
           }
 
           if ($env:INPUT_FULLSCREEN -eq "true") {
