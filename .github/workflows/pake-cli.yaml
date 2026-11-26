@@ -25,6 +25,9 @@ on:
       icon:
         description: "Icon URL, auto-fetch if empty"
         required: false
+      inject:
+          description: "Inject JS/CSS files (comma-separated paths in repo)"
+        required: false
       width:
         description: "Window width (px)"
         required: false
@@ -105,6 +108,7 @@ jobs:
           INPUT_URL: ${{ inputs.url }}
           INPUT_NAME: ${{ inputs.name }}
           INPUT_ICON: ${{ inputs.icon }}
+          INPUT_INJECT: ${{ inputs.inject }}
           INPUT_WIDTH: ${{ inputs.width }}
           INPUT_HEIGHT: ${{ inputs.height }}
           INPUT_MIN_WIDTH: ${{ inputs.min_width }}
@@ -121,7 +125,10 @@ jobs:
           if [ -n "$INPUT_ICON" ]; then
             ARGS+=("--icon" "$INPUT_ICON")
           fi
-
+          if [ -n "$INPUT_INJECT" ]; then
+                      ARGS+=("--inject" "$INPUT_INJECT")
+                                fi
+                                
           if [ -n "$INPUT_WIDTH" ]; then
             ARGS+=("--width" "$INPUT_WIDTH")
           fi
@@ -175,6 +182,7 @@ jobs:
           INPUT_URL: ${{ inputs.url }}
           INPUT_NAME: ${{ inputs.name }}
           INPUT_ICON: ${{ inputs.icon }}
+          INPUT_INJECT: ${{ inputs.inject }}
           INPUT_WIDTH: ${{ inputs.width }}
           INPUT_HEIGHT: ${{ inputs.height }}
           INPUT_MIN_WIDTH: ${{ inputs.min_width }}
@@ -192,7 +200,10 @@ jobs:
           if (-not [string]::IsNullOrEmpty($env:INPUT_ICON)) {
             $args += "--icon", $env:INPUT_ICON
           }
-
+          if (-not [string]::IsNullOrEmpty($env:INPUT_INJECT)) {
+                      $args += "--inject", $env:INPUT_INJECT
+                                }
+                                
           if (-not [string]::IsNullOrEmpty($env:INPUT_WIDTH)) {
             $args += "--width", $env:INPUT_WIDTH
           }
