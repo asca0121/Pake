@@ -75,6 +75,16 @@ on:
         description: "Windows installer language (e.g. zh-CN)"
         required: false
         default: "en-US"
+      show_system_tray:
+        description: "Show system tray icon"
+        required: false
+        type: boolean
+        default: false
+      hide_on_close:
+        description: "Hide window to tray instead of quitting on close (Windows/Linux)"
+        required: false
+        type: boolean
+        default: false
 # Builds an app on demand for anyone who runs it; it writes nothing.
 permissions:
   contents: read
@@ -123,6 +133,8 @@ jobs:
           INPUT_NEW_WINDOW: ${{ inputs.new_window }}
           INPUT_MULTI_ARCH: ${{ inputs.multi_arch }}
           INPUT_TARGETS: ${{ inputs.targets }}
+          INPUT_SHOW_SYSTEM_TRAY: ${{ inputs.show_system_tray }}
+          INPUT_HIDE_ON_CLOSE: ${{ inputs.hide_on_close }}
         run: |
           ARGS=("$INPUT_URL" "--name" "$INPUT_NAME")
 
@@ -132,7 +144,7 @@ jobs:
           if [ -n "$INPUT_INJECT" ]; then
               ARGS+=("--inject" "$INPUT_INJECT")
                       fi
-                                
+
           if [ -n "$INPUT_WIDTH" ]; then
             ARGS+=("--width" "$INPUT_WIDTH")
           fi
@@ -169,6 +181,14 @@ jobs:
             ARGS+=("--multi-arch")
           fi
 
+          if [ "$INPUT_SHOW_SYSTEM_TRAY" == "true" ]; then
+            ARGS+=("--show-system-tray")
+          fi
+
+          if [ "$INPUT_HIDE_ON_CLOSE" == "true" ]; then
+            ARGS+=("--hide-on-close")
+          fi
+
           if [ -n "$INPUT_TARGETS" ] && [ "$RUNNER_OS" == "Linux" ]; then
             ARGS+=("--targets" "$INPUT_TARGETS")
           fi
@@ -198,6 +218,8 @@ jobs:
           INPUT_MULTI_ARCH: ${{ inputs.multi_arch }}
           INPUT_TARGETS: ${{ inputs.targets }}
           INPUT_INSTALLER_LANGUAGE: ${{ inputs.installer_language }}
+          INPUT_SHOW_SYSTEM_TRAY: ${{ inputs.show_system_tray }}
+          INPUT_HIDE_ON_CLOSE: ${{ inputs.hide_on_close }}
         run: |
           $args = $env:INPUT_URL, "--name", $env:INPUT_NAME
 
@@ -208,7 +230,7 @@ jobs:
           if (-not [string]::IsNullOrEmpty($env:INPUT_INJECT)) {
               $args += "--inject", $env:INPUT_INJECT
                       }
-                                
+
           if (-not [string]::IsNullOrEmpty($env:INPUT_WIDTH)) {
             $args += "--width", $env:INPUT_WIDTH
           }
@@ -242,6 +264,14 @@ jobs:
 
           if ($env:INPUT_NEW_WINDOW -eq "true") {
             $args += "--new-window"
+          }
+
+          if ($env:INPUT_SHOW_SYSTEM_TRAY -eq "true") {
+            $args += "--show-system-tray"
+          }
+
+          if ($env:INPUT_HIDE_ON_CLOSE -eq "true") {
+            $args += "--hide-on-close"
           }
 
           Write-Host "Running: node dist/cli.js $($args -join ' ')"
